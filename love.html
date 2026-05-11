@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Message For You ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 15px;
+            box-shadow: 0 8px 25px rgba(255,107,107,0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255,107,107,0.6);
+        }
+
+        .profile-pic {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid rgba(255,255,255,0.8);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            margin: 30px auto;
+            display: block;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            color: #d63384;
+            margin: 25px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Cuteness Calculator */
+        .cuteness-container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .cuteness-meter {
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(90deg, #f0f0f0, #e0e0e0);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.1);
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .cuteness-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #4ecdc4);
+            width: 0%;
+            transition: width 2.5s ease-out;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .cuteness-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            opacity: 0;
+            transition: opacity 0.5s ease 1.5s;
+        }
+
+        .cuteness-fill.filled .cuteness-percentage {
+            opacity: 1;
+        }
+
+        .cuteness-status {
+            font-size: 1.6em;
+            color: #ff1493;
+            font-weight: bold;
+            margin: 25px 0;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s ease;
+        }
+
+        .cuteness-status.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .messages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .message-card {
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .message-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-img:hover {
+            transform: scale(1.05);
+        }
+
+        .sorry-message {
+            max-width: 800px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.95);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.2);
+            font-size: 1.4em;
+            color: #333;
+            line-height: 1.7;
+        }
+
+        .love-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .love-heart {
+            font-size: 10em;
+            animation: heartbeat 1.2s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .final-message {
+            color: white;
+            font-size: 2.8em;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        #messageDisplay {
+            margin-top: 30px;
+            display: none;
+        }
+
+        #messageContent {
+            background: rgba(255,255,255,0.95);
+            padding: 35px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            font-size: 1.3em;
+            color: #333;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2em; }
+            .profile-pic { width: 160px; height: 160px; }
+            .messages-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1 -->
+    <div id="page1" class="page active">
+        <img src="./Photos-3-001/image_1.jpg" alt="My Love" class="profile-pic" onerror="this.src='https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face'">
+        <h1>Hey Love! 💕</h1>
+        <p style="font-size: 1.4em; color: #333; margin: 30px 0;">Sumaita(Puchu)</p>
+        <button class="btn" onclick="goToPage(2)">Let's start →</button>
+    </div>
+
+    <!-- Page 2: Cuteness Calculator -->
+    <div id="page2" class="page">
+        <div class="cuteness-container">
+            <h1>🥰 Cuteness Calculator 🥰</h1>
+            <p style="font-size: 1.2em; color: #333; margin-bottom: 20px;">Click to see your cuteness level!</p>
+            <div class="cuteness-meter">
+                <div class="cuteness-fill" id="cutenessFill">
+                    <div class="cuteness-percentage">200%</div>
+                </div>
+            </div>
+            <div class="cuteness-status" id="cutenessStatus">OVERLOADED!</div>
+            <button class="btn" onclick="calculateCuteness()">Calculate Cuteness ✨</button>
+            <button class="btn" id="nextBtn2" onclick="goToPage(3)" style="display: none;">Next →</button>
+        </div>
+    </div>
+
+    <!-- Page 3: Messages -->
+    <div id="page3" class="page">
+        <h1>💌 Special Messages 💌</h1>
+        <p style="font-size: 1.2em; color: #333; margin-bottom: 30px;">Click each one to read</p>
+        <div class="messages-grid">
+            <div class="message-card" onclick="showMessage(0)">
+                <h3>❤️ Message 1</h3>
+                <p>Your smile lights up my world!</p>
+            </div>
+            <div class="message-card" onclick="showMessage(1)">
+                <h3>💕 Message 2</h3>
+                <p>Every moment with you...</p>
+            </div>
+            <div class="message-card" onclick="showMessage(2)">
+                <h3>🌟 Message 3</h3>
+                <p>Our beautiful promise...</p>
+            </div>
+        </div>
+        <div id="messageDisplay">
+            <div id="messageContent"></div>
+            <button class="btn" onclick="nextMessage()">Next Message</button>
+        </div>
+        <button class="btn" id="nextBtn3" onclick="goToPage(4)" style="display: none; margin-top: 20px;">Continue →</button>
+    </div>
+
+    <!-- Page 4: Sorry -->
+    <div id="page4" class="page">
+        <h1>💔 I'm So Sorry 💔</h1>
+        <div class="sorry-message">
+            <p><strong>My Love,</strong></p>
+            <p>I know I've hurt you and I'm truly sorry from the bottom of my heart. You mean everything to me.</p>
+            <p>Please forgive me. I promise to be better and cherish you more every day. Your happiness is my priority.</p>
+            <p>I love you more than words can express ❤️</p>
+            <p style="font-size: 1.6em; margin-top: 30px;"><strong>Forever Yours</strong></p>
+        </div>
+        <button class="btn" onclick="goToPage(5)">Our Journey →</button>
+    </div>
+
+    <!-- Page 5: Photos -->
+    <div id="page5" class="page">
+        <h1>👫 Our Beautiful Journey 👫</h1>
+        <div class="photo-gallery">
+            <img src="./Photos-3-001/image_2.jpg" class="gallery-img" alt="Memory 1" onerror="this.src='https://images.unsplash.com/photo-1519741497674-611481863552?w=400'">
+            <img src="./Photos-3-001/image_3.jpg" class="gallery-img" alt="Memory 2" onerror="this.src='https://images.unsplash.com/photo-1576484168799-5d1b5e7df865?w=400'">
+            <img src="./Photos-3-001/image_4.jpg" class="gallery-img" alt="Memory 3" onerror="this.src='https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400'">
+            <img src="./Photos-3-001/image_5.jpg" class="gallery-img" alt="Memory 4" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'">
+            <img src="./Photos-3-001/image_6.jpg" class="gallery-img" alt="Memory 5" onerror="this.src='https://images.unsplash.com/photo-1524504388940-b6b749e7148d?w=400'">
+            <img src="./Photos-3-001/image_7.jpg" class="gallery-img" alt="Memory 6" onerror="this.src='https://images.unsplash.com/photo-1517457373958-b7bdd4587206?w=400'">
+            <img src="./Photos-3-001/image_8.jpg" class="gallery-img" alt="Memory 7" onerror="this.src='https://images.unsplash.com/photo-1519741497674-611481863552?w=400'">
+            <img src="./Photos-3-001/image_9.webp" class="gallery-img" alt="Memory 8" onerror="this.src='https://images.unsplash.com/photo-1576484168799-5d1b5e7df865?w=400'">
+        </div>
+        <button class="btn" onclick="showFinalPopup()" style="margin-top: 40px; font-size: 20px;">Final Surprise 💖</button>
+    </div>
+
+    <!-- Final Popup -->
+    <div id="lovePopup" class="love-popup">
+        <div class="love-heart">💖</div>
+        <div class="final-message">I LOVE YOU FOREVER! 💕</div>
+        <p style="color: white; font-size: 1.5em; margin-top: 20px;">Thank you for being my everything, Sumaita</p>
+        <button class="btn" onclick="document.getElementById('lovePopup').style.display='none'" style="margin-top: 30px;">Close 💕</button>
+    </div>
+
+    <script>
+        // ✅ FIXED: Added missing comma
+        const messages = [
+            "Your smile lights up my entire world! You are the most beautiful person inside and out. I fall for you more every day! 💕✨",
+            "Every moment with you feels like a dream. Thank you for loving me and making my life magical! 🌸💖",
+            "Hey… suno na, Please itna overthink mat karo… mujhe pata hai tum dar rahi ho. Main feel kar sakta hoon. Har baar jab tum future ke baare mein sochti ho, tumhe lagta hai na ki humari shaadi possible nahi hai… Par ek baar meri baat dil se suno. Hum jo feel karte hain na… yeh normal nahi hai, yeh special hai. Har kisi ko aisa sachcha pyaar nahi milta. Aur mujhe nahi lagta ki Allah bina wajah do logon ko itna close laata hai. Quran mein bhi likha hai ki husband-wife ke beech Allah love aur mercy daalta hai… matlab yeh feeling galat nahi ho sakti. Mujhe pata hai tumhe darr lagta hai — family ka, society ka, log kya kahenge… par sach bataun? Yeh sab temporary hai. Jo permanent hai na… woh hai hum. Aur main yeh clearly bol raha hoon — tum akeli nahi ho. Kabhi bhi nahi. Main hoon tumhare saath, har situation mein. Hum bhaagne wale nahi hain… hum fight bhi nahi karenge… hum samjhayenge. Respect ke saath, patience ke saath. Time lagega, but hoga. Aur agar kabhi tumhe lage ki sab impossible lag raha hai, bas yeh yaad rakhna: 'Allah par trust rakhne walon ke liye woh kaafi hai.' Bas thoda sa trust rakhna… mujh par, aur hum par. Main promise karta hoon… main isse possible banaunga. Step by step. Tumhe kabhi regret nahi hone dunga ki tumne mujh par trust kiya. So please… dar ko apne dil se thoda sa nikaalo… aur mujhe pakad ke rakho. Hum kar lenge… together 💕"
+        ];
+
+        let currentMessageIndex = 0;
+        let messagesRead = 0;
+
+        function goToPage(pageNumber) {
+            console.log('Going to page:', pageNumber); // Debug
+            for(let i = 1; i <= 5; i++) {
+                document.getElementById('page' + i).classList.remove('active');
+            }
+            document.getElementById('page' + pageNumber).classList.add('active');
+        }
+
+        function calculateCuteness() {
+            const fill = document.getElementById('cutenessFill');
+            const status = document.getElementById('cutenessStatus');
+            const nextBtn = document.getElementById('nextBtn2');
+            
+            fill.style.width = '200%';
+            fill.classList.add('filled');
+            
+            setTimeout(() => {
+                status.classList.add('visible');
+                status.innerHTML = '🚨 200% CUTENESS OVERLOAD! 💥💖';
+            }, 1500);
+            
+            setTimeout(() => {
+                nextBtn.style.display = 'inline-block';
+            }, 3000);
+        }
+
+        function showMessage(index) {
+            currentMessageIndex = index;
+            document.querySelector('.messages-grid').style.display = 'none';
+            document.getElementById('messageDisplay').style.display = 'block';
+            document.getElementById('messageContent').innerHTML = messages[index];
+            messagesRead++;
+        }
+
+        function nextMessage() {
+            document.getElementById('messageDisplay').style.display = 'none';
+            document.querySelector('.messages-grid').style.display = 'grid';
+            
+            if (messagesRead >= 3) {
+                document.getElementById('nextBtn3').style.display = 'inline-block';
+            }
+        }
+
+        function showFinalPopup() {
+            document.getElementById('lovePopup').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
